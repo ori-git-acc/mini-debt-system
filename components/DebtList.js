@@ -154,7 +154,7 @@ const DebtList = () => {
 								<th className="py-2 px-4 border-b border-gray-600">Total Paid</th>
 								<th className="py-2 px-4 border-b border-gray-600">Date Created</th>
 								<th className="py-2 px-4 border-b border-gray-600">Last Payment Date</th>
-								<th className="py-2 px-4 border-b border-gray-600">Action</th>
+								{isAdmin && <th className="py-2 px-4 border-b border-gray-600">Action</th>}
 							</tr>
 						</thead>
 						<tbody className="text-center">
@@ -172,17 +172,19 @@ const DebtList = () => {
 											{debt.lastPaymentDate ? formatDate(debt.lastPaymentDate) : ""}
 										</td>
 										<td className="py-2 px-4 border-b border-gray-600">
-											<button
-												onClick={() => handlePay(debt.id)}
-												className={`bg-green-500 ${
-													debt.status !== "unpaid"
-														? "opacity-50 cursor-not-allowed"
-														: "hover:bg-green-700"
-												} text-white font-bold py-1 px-2 rounded mr-2`}
-												disabled={debt.status !== "unpaid"}
-											>
-												Pay
-											</button>
+											{isAdmin && (
+												<button
+													onClick={() => handlePay(debt.id)}
+													className={`bg-green-500 ${
+														debt.status !== "unpaid"
+															? "opacity-50 cursor-not-allowed"
+															: "hover:bg-green-700"
+													} text-white font-bold py-1 px-2 rounded mr-2`}
+													disabled={debt.status !== "unpaid"}
+												>
+													Pay
+												</button>
+											)}
 											{isAdmin && (
 												<button
 													onClick={() => handleWaive(debt.id)}
