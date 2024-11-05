@@ -9,13 +9,18 @@ const DebtHistory = () => {
 	const router = useRouter();
 
 	useEffect(() => {
+		const userType = localStorage.getItem("userType");
+		if (userType !== "Administrator") {
+			router.push("/tracker");
+		}
+
 		const fetchDebts = async () => {
 			const response = await fetch("/api/debts");
 			const data = await response.json();
 			setDebts(data);
 		};
 		fetchDebts();
-	}, []);
+	}, [router]);
 
 	const handleSearchChange = (e) => {
 		setSearchTerm(e.target.value);
@@ -52,7 +57,7 @@ const DebtHistory = () => {
 		.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
 
 	return (
-		<div className="flex flex-col items-center min-h-screen bg-gray-800 p-4">
+		<div className="flex flex-col items-center min-h-screen bg-gray-900 p-4">
 			<h1 className="text-3xl font-bold text-white mt-32 mb-5">Debt History</h1>
 			<div className="w-full max-w-7xl">
 				<div className="flex justify-between items-center mb-4">
@@ -71,9 +76,9 @@ const DebtHistory = () => {
 						Delete Selected
 					</button>
 				</div>
-				<div className="overflow-auto bg-gray-900 rounded-lg shadow-lg">
+				<div className="overflow-auto bg-gray-800 rounded-lg shadow-lg max-h-[450px]">
 					<table className="min-w-full bg-gray-700 text-white">
-						<thead className="text-center">
+						<thead className="text-center sticky top-0 bg-gray-700">
 							<tr>
 								<th className="py-2 px-4 border-b border-gray-600">
 									<input
@@ -131,7 +136,7 @@ const DebtHistory = () => {
 								</th>
 							</tr>
 						</thead>
-						<tbody className="text-center">
+						<tbody className="text-center bg-gray-800">
 							{sortedDebts.map((debt) => (
 								<tr key={debt.id}>
 									<td className="py-2 px-4 border-b border-gray-600">

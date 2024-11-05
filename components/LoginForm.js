@@ -20,15 +20,19 @@ const LoginForm = () => {
 		const result = await response.json();
 		if (response.ok) {
 			login({ username: result.user.username, userType: result.user.userType });
-			router.push("/"); // Redirect to home page
+			if (result.user.userType === "Administrator") {
+				router.push("/"); // Redirect to home page for admins
+			} else {
+				router.push("/tracker"); // Redirect to tracker page for non-admins
+			}
 		} else {
 			alert(result.message);
 		}
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-800">
-			<div className="w-full max-w-96 p-8 border rounded-lg shadow-lg ring-1 ring-white">
+		<div className="flex justify-center items-center min-h-screen bg-gray-900">
+			<div className="w-full max-w-96 p-8 rounded-lg shadow-lg bg-gray-800">
 				<h1 className="text-3xl font-bold text-center text-white">Login</h1>
 				<form onSubmit={handleLogin} className="mt-5">
 					<div className="mb-4">
