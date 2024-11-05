@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 
 export default function App({ Component, pageProps }) {
 	const router = useRouter();
-	const noNavbarRoutes = ["/landing", "/login", "/signup"];
+	const noNavbarRoutes = ["/landing", "/login", "/signup", "/signup-admin"];
 
 	return (
 		<AuthProvider>
