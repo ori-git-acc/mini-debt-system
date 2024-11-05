@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 const AddDebtForm = () => {
 	const [debtorName, setDebtorName] = useState("");
@@ -6,6 +7,7 @@ const AddDebtForm = () => {
 	const [suggestions, setSuggestions] = useState([]);
 	const [debtorList, setDebtorList] = useState([]);
 	const [isAdmin, setIsAdmin] = useState(false);
+	const router = useRouter();
 
 	useEffect(() => {
 		const fetchRegisteredUsers = async () => {
@@ -26,6 +28,7 @@ const AddDebtForm = () => {
 			setIsAdmin(true);
 		} else {
 			setDebtorName(username);
+			router.push("/tracker"); // Redirect non-admin users to the tracker page
 		}
 	}, []);
 
@@ -75,8 +78,8 @@ const AddDebtForm = () => {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-800">
-			<div className="bg-gray-700 w-full max-w-80 p-8 rounded-lg shadow-lg">
+		<div className="flex justify-center items-center min-h-screen bg-gray-900">
+			<div className="bg-gray-800 w-full max-w-80 p-8 rounded-lg shadow-lg">
 				<h1 className="text-3xl font-bold text-center text-white">Add Debt</h1>
 				<div className="mt-5 relative">
 					<label className="block text-white text-sm font-bold mb-2" htmlFor="debtorName">

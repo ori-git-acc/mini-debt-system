@@ -7,7 +7,6 @@ import { AuthContext } from "../context/AuthContext";
 
 const navigation = [
 	{ name: "Home", href: "/" },
-	{ name: "Add Debt", href: "/add-debt" },
 	{ name: "Tracker", href: "/tracker" },
 ];
 
@@ -22,16 +21,12 @@ const Navbar = () => {
 	const handleLinkClick = (href) => {
 		if (href === "/") {
 			if (isLoggedIn) {
-				router.push(href);
+				user?.userType === "Administrator" ? router.push(href) : router.push("/tracker");
 			} else {
 				router.push("/landing");
 			}
 		} else {
-			if (isLoggedIn) {
-				router.push(href);
-			} else {
-				router.push("/login");
-			}
+			isLoggedIn ? router.push(href) : router.push("/login");
 		}
 	};
 
@@ -53,7 +48,16 @@ const Navbar = () => {
 							</div>
 							<div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
 								<div className="flex flex-shrink-0 items-center">
-									<Link href={isLoggedIn ? "/" : "/landing"} legacyBehavior>
+									<Link
+										href={
+											isLoggedIn
+												? user?.userType === "Administrator"
+													? "/"
+													: "/tracker"
+												: "/landing"
+										}
+										legacyBehavior
+									>
 										<a className="text-white text-lg font-bold cursor-pointer">
 											<img src="/logo.svg" alt="Logo" className="h-8 w-auto" />
 										</a>
@@ -76,7 +80,21 @@ const Navbar = () => {
 												{item.name}
 											</a>
 										))}
-										{user?.userType === "Administrator" && (
+										{isLoggedIn && user?.userType === "Administrator" && (
+											<a
+												onClick={() => handleLinkClick("/add-debt")}
+												className={classNames(
+													router.pathname === "/add-debt"
+														? "bg-gray-900 text-white"
+														: "text-gray-300 hover:bg-gray-700 hover:text-white",
+													"rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
+												)}
+												aria-current={router.pathname === "/add-debt" ? "page" : undefined}
+											>
+												Add Debt
+											</a>
+										)}
+										{isLoggedIn && user?.userType === "Administrator" && (
 											<a
 												onClick={() => handleLinkClick("/history")}
 												className={classNames(
@@ -185,7 +203,22 @@ const Navbar = () => {
 									{item.name}
 								</Disclosure.Button>
 							))}
-							{user?.userType === "Administrator" && (
+							{isLoggedIn && user?.userType === "Administrator" && (
+								<Disclosure.Button
+									as="a"
+									onClick={() => handleLinkClick("/add-debt")}
+									className={classNames(
+										router.pathname === "/add-debt"
+											? "bg-gray-900 text-white"
+											: "text-gray-300 hover:bg-gray-700 hover:text-white",
+										"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
+									)}
+									aria-current={router.pathname === "/add-debt" ? "page" : undefined}
+								>
+									Add Debt
+								</Disclosure.Button>
+							)}
+							{isLoggedIn && user?.userType === "Administrator" && (
 								<Disclosure.Button
 									as="a"
 									onClick={() => handleLinkClick("/history")}

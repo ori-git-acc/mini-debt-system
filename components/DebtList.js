@@ -27,6 +27,9 @@ const DebtList = () => {
 			}
 			return debt;
 		});
+
+		updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
+
 		const userDebts =
 			userType === "Administrator" ? updatedDebts : updatedDebts.filter((debt) => debt.debtorName === username);
 		setDebts(userDebts);
@@ -113,7 +116,7 @@ const DebtList = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center min-h-screen bg-gray-800 p-4">
+		<div className="flex flex-col items-center min-h-screen bg-gray-900 p-4">
 			<h1 className="text-3xl font-bold text-white mt-32 mb-5">Debt List</h1>
 			<div className="w-full max-w-7xl">
 				<div className="flex justify-between items-center mb-4">
@@ -140,13 +143,15 @@ const DebtList = () => {
 				</div>
 				<div className="flex justify-between md:justify-start md:space-x-4 items-center text-white mb-4">
 					<span>Total Remaining Debt: {totalRemainingDebt}</span>
-					<a href="/add-debt" className="text-blue-500 hover:underline whitespace-nowrap">
-						Add Debt
-					</a>
+					{isAdmin && (
+						<a href="/add-debt" className="text-blue-500 hover:underline whitespace-nowrap">
+							Add Debt
+						</a>
+					)}
 				</div>
-				<div className="overflow-auto bg-gray-900 rounded-lg shadow-lg">
+				<div className="overflow-auto bg-gray-800 rounded-lg shadow-lg max-h-96 scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-gray-900">
 					<table className="min-w-full bg-gray-700 text-white">
-						<thead className="text-center">
+						<thead className="sticky top-0 bg-gray-700 text-center">
 							<tr>
 								<th className="py-2 px-4 border-b border-gray-600">Debtor's Name</th>
 								<th className="py-2 px-4 border-b border-gray-600">Debt Original Amount</th>
@@ -157,7 +162,7 @@ const DebtList = () => {
 								{isAdmin && <th className="py-2 px-4 border-b border-gray-600">Action</th>}
 							</tr>
 						</thead>
-						<tbody className="text-center">
+						<tbody className="text-center bg-gray-800">
 							{Array.isArray(filteredDebts) &&
 								filteredDebts.map((debt) => (
 									<tr key={debt.id}>

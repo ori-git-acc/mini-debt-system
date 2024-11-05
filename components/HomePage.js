@@ -56,9 +56,9 @@ const HomePage = () => {
 
 	return (
 		<div
-			className={`${geistSans.variable} ${geistMono.variable} grid place-items-center bg-gray-800 min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[var(--font-geist-sans)]`}
+			className={`${geistSans.variable} ${geistMono.variable} grid place-items-center bg-gray-900 min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[var(--font-geist-sans)]`}
 		>
-			<main className="flex flex-col gap-8 items-center sm:items-center">
+			<main className="flex flex-col gap-8 items-center sm:items-center bg-gray-900">
 				<h1 className="text-3xl font-bold text-center">Hi {username}, welcome to mini debt system!</h1>
 				<div className="flex gap-4 items-center flex-col sm:flex-row">
 					<button

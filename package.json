@@ -11,9 +11,15 @@
   "dependencies": {
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.1.5",
+    "connect-session-sequelize": "^7.1.7",
+    "cookie": "^0.7.2",
+    "express-session": "^1.18.1",
+    "iron-session": "^8.0.3",
     "next": "15.0.1",
-    "react": "19.0.0-rc-69d4b800-20241021",
-    "react-dom": "19.0.0-rc-69d4b800-20241021",
+    "nodemailer": "^6.9.16",
+    "react": "^19.0.0-rc-69d4b800-20241021",
+    "react-dom": "^19.0.0-rc-69d4b800-20241021",
+    "sequelize": "^6.37.5",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

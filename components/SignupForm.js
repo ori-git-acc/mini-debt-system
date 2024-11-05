@@ -59,8 +59,8 @@ const SignupForm = () => {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-800">
-			<div className="w-full max-w-96 p-8 border rounded-lg shadow-lg ring-1 ring-white">
+		<div className="flex justify-center items-center min-h-screen bg-gray-900">
+			<div className="w-full max-w-96 p-8 rounded-lg shadow-lg bg-gray-800">
 				<h1 className="text-3xl font-bold text-center text-white">Signup</h1>
 				<form onSubmit={handleSignup} className="mt-5">
 					<div className="mb-4">

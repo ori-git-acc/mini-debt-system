@@ -73,8 +73,8 @@ const SignupAsAdminForm = () => {
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen bg-gray-800">
-			<div className="w-full max-w-96 p-8 border rounded-lg shadow-lg ring-1 ring-white">
+		<div className="flex justify-center items-center min-h-screen bg-gray-900">
+			<div className="w-full max-w-96 p-8 rounded-lg shadow-lg bg-gray-800">
 				<h1 className="text-3xl font-bold text-center text-white">Signup as Administrator</h1>
 				{!isAdminVerified && (
 					<div className="mt-5">
@@ -91,7 +91,7 @@ const SignupAsAdminForm = () => {
 						/>
 						<button
 							onClick={handleVerifyAdmin}
-							className="mt-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 w-full rounded focus:outline-none focus:shadow-outline"
+							className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full rounded focus:outline-none focus:shadow-outline"
 						>
 							Verify Admin Email
 						</button>
