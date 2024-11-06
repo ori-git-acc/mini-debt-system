@@ -6,6 +6,7 @@ const DebtHistory = () => {
 	const [selectedDebts, setSelectedDebts] = useState([]);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortBy, setSortBy] = useState("debtorName");
+	const [totalDebts, setTotalDebts] = useState(0); // State to keep track of total debts count
 	const router = useRouter();
 
 	useEffect(() => {
@@ -18,6 +19,7 @@ const DebtHistory = () => {
 			const response = await fetch("/api/debts");
 			const data = await response.json();
 			setDebts(data);
+			setTotalDebts(data.length);
 		};
 		fetchDebts();
 	}, [router]);
@@ -75,6 +77,10 @@ const DebtHistory = () => {
 					>
 						Delete Selected
 					</button>
+				</div>
+				<div className="flex justify-between items-center text-white mb-4">
+					{" "}
+					<span>Number of Debts: {totalDebts}</span> {/* Display total debts count */}{" "}
 				</div>
 				<div className="overflow-auto bg-gray-800 rounded-lg shadow-lg max-h-[450px]">
 					<table className="min-w-full bg-gray-700 text-white">

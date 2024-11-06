@@ -123,7 +123,7 @@ const Navbar = () => {
 														<a
 															href="#"
 															className={classNames(
-																active ? "bg-gray-800" : "",
+																active ? "bg-gray-700" : "",
 																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
@@ -136,7 +136,7 @@ const Navbar = () => {
 														<a
 															href="#"
 															className={classNames(
-																active ? "bg-gray-800" : "",
+																active ? "bg-gray-700" : "",
 																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
@@ -150,7 +150,7 @@ const Navbar = () => {
 															href="#"
 															onClick={logout}
 															className={classNames(
-																active ? "bg-gray-800" : "",
+																active ? "bg-gray-700" : "",
 																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
@@ -176,8 +176,8 @@ const Navbar = () => {
 										onClick={() => handleLinkClick(item.href)}
 										className={classNames(
 											router.pathname === item.href
-												? "bg-gray-700 text-white"
-												: "text-gray-300 hover:bg-gray-700 hover:text-white",
+												? "bg-gray-800 text-white"
+												: "text-gray-300 hover:bg-gray-800 hover:text-white",
 											"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
 										)}
 										aria-current={router.pathname === item.href ? "page" : undefined}
