@@ -1,4 +1,4 @@
-// pages/debt-list.js
+// pages/tracker.js
 import DebtList from "../components/DebtList";
 
 const DebtListPage = () => {
