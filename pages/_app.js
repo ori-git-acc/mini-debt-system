@@ -1,3 +1,4 @@
+// pages/_app.js
 import "@/styles/globals.css";
 import Navbar from "../components/Navbar";
 import { AuthProvider, AuthContext } from "../context/AuthContext";
@@ -6,7 +7,7 @@ import { useEffect, useContext } from "react";
 
 export default function App({ Component, pageProps }) {
 	const router = useRouter();
-	const noNavbarRoutes = ["/landing", "/login", "/signup", "/signup-admin"];
+	const noNavbarRoutes = ["/landing", "/login", "/signup", "/signup-admin", "/forgot-password", "/reset-password"];
 
 	return (
 		<AuthProvider>

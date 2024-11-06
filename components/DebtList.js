@@ -1,3 +1,4 @@
+// conponents/DebtList.js
 import { useState, useEffect } from "react";
 
 const DebtList = () => {

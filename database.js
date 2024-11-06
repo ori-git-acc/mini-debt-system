@@ -1,3 +1,4 @@
+// database.js
 const sqlite3 = require("sqlite3").verbose();
 
 const db = new sqlite3.Database("./mini-debt-system.db", (err) => {
@@ -12,7 +13,9 @@ const db = new sqlite3.Database("./mini-debt-system.db", (err) => {
                 username TEXT,
                 email TEXT,
                 password TEXT,
-                userType TEXT
+                userType TEXT,
+                resetPasswordToken TEXT,
+                resetPasswordExpires INTEGER
             )
         `,
 			(err) => {

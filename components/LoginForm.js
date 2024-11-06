@@ -1,3 +1,4 @@
+// components/LoginForm.js
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { AuthContext } from "../context/AuthContext";
@@ -70,6 +71,11 @@ const LoginForm = () => {
 						</button>
 					</div>
 				</form>
+				<div className="mt-2 text-center">
+					<a href="/forgot-password" className="text-blue-500 hover:underline">
+						Forgot Password?
+					</a>
+				</div>
 				<div className="mt-5 text-center">
 					<a href="/signup" className="text-blue-500 hover:underline">
 						Don't have an account? Signup
