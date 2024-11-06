@@ -10,6 +10,7 @@ const DebtList = () => {
 	const [paymentAmount, setPaymentAmount] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [statusFilter, setStatusFilter] = useState("");
+	const [totalDebts, setTotalDebts] = useState(0); // Added state for total debts
 
 	const formatDate = (dateString) => {
 		const options = { year: "numeric", month: "short", day: "numeric" };
@@ -55,6 +56,7 @@ const DebtList = () => {
 		setFilteredDebts(filtered);
 		const totalDebt = filtered.reduce((acc, debt) => acc + debt.remainingBalance, 0);
 		setTotalRemainingDebt(totalDebt);
+		setTotalDebts(filtered.length); // Update the total debts count
 	}, [searchTerm, statusFilter, debts, isAdmin]);
 
 	const handleSearchChange = (e) => {
@@ -142,6 +144,7 @@ const DebtList = () => {
 					)}
 				</div>
 				<div className="flex justify-between md:justify-start md:space-x-4 items-center text-white mb-4">
+					<span>Number of Debts: {totalDebts}</span> {/* Display total debts */}
 					<span>Total Remaining Debt: {totalRemainingDebt}</span>
 					{isAdmin && (
 						<a href="/add-debt" className="text-blue-500 hover:underline whitespace-nowrap">
