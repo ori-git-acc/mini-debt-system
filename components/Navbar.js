@@ -5,10 +5,14 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { AuthContext } from "../context/AuthContext";
 
-const navigation = [
+const adminNavigation = [
 	{ name: "Home", href: "/" },
 	{ name: "Tracker", href: "/tracker" },
+	{ name: "Add Debt", href: "/add-debt" },
+	{ name: "History", href: "/history" },
 ];
+
+const userNavigation = [{ name: "Tracker", href: "/tracker" }];
 
 function classNames(...classes) {
 	return classes.filter(Boolean).join(" ");
@@ -31,7 +35,7 @@ const Navbar = () => {
 	};
 
 	return (
-		<Disclosure as="nav" className="bg-black fixed w-full z-10 top-0">
+		<Disclosure as="nav" className="bg-gray-900 fixed w-full z-10 top-0">
 			{({ open }) => (
 				<>
 					<div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -63,53 +67,30 @@ const Navbar = () => {
 										</a>
 									</Link>
 								</div>
-								<div className="hidden sm:ml-6 sm:block">
-									<div className="flex space-x-4">
-										{navigation.map((item) => (
-											<a
-												key={item.name}
-												onClick={() => handleLinkClick(item.href)}
-												className={classNames(
-													router.pathname === item.href
-														? "bg-gray-900 text-white"
-														: "text-gray-300 hover:bg-gray-700 hover:text-white",
-													"rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-												)}
-												aria-current={router.pathname === item.href ? "page" : undefined}
-											>
-												{item.name}
-											</a>
-										))}
-										{isLoggedIn && user?.userType === "Administrator" && (
-											<a
-												onClick={() => handleLinkClick("/add-debt")}
-												className={classNames(
-													router.pathname === "/add-debt"
-														? "bg-gray-900 text-white"
-														: "text-gray-300 hover:bg-gray-700 hover:text-white",
-													"rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-												)}
-												aria-current={router.pathname === "/add-debt" ? "page" : undefined}
-											>
-												Add Debt
-											</a>
-										)}
-										{isLoggedIn && user?.userType === "Administrator" && (
-											<a
-												onClick={() => handleLinkClick("/history")}
-												className={classNames(
-													router.pathname === "/history"
-														? "bg-gray-900 text-white"
-														: "text-gray-300 hover:bg-gray-700 hover:text-white",
-													"rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
-												)}
-												aria-current={router.pathname === "/history" ? "page" : undefined}
-											>
-												History
-											</a>
-										)}
+								{isLoggedIn && (
+									<div className="hidden sm:ml-6 sm:block">
+										<div className="flex space-x-4">
+											{(user?.userType === "Administrator"
+												? adminNavigation
+												: userNavigation
+											).map((item) => (
+												<a
+													key={item.name}
+													onClick={() => handleLinkClick(item.href)}
+													className={classNames(
+														router.pathname === item.href
+															? "bg-gray-800 text-white"
+															: "text-gray-300 hover:bg-gray-800 hover:text-white",
+														"rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
+													)}
+													aria-current={router.pathname === item.href ? "page" : undefined}
+												>
+													{item.name}
+												</a>
+											))}
+										</div>
 									</div>
-								</div>
+								)}
 							</div>
 							{isLoggedIn && (
 								<div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
@@ -136,14 +117,14 @@ const Navbar = () => {
 											leaveFrom="transform opacity-100 scale-100"
 											leaveTo="transform opacity-0 scale-95"
 										>
-											<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+											<Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-900 py-1 shadow-lg ring-2 ring-white ring-opacity-10 focus:outline-none">
 												<Menu.Item>
 													{({ active }) => (
 														<a
 															href="#"
 															className={classNames(
-																active ? "bg-gray-100" : "",
-																"block px-4 py-2 text-sm text-gray-700"
+																active ? "bg-gray-800" : "",
+																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
 															Profile
@@ -155,8 +136,8 @@ const Navbar = () => {
 														<a
 															href="#"
 															className={classNames(
-																active ? "bg-gray-100" : "",
-																"block px-4 py-2 text-sm text-gray-700"
+																active ? "bg-gray-800" : "",
+																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
 															Settings
@@ -169,8 +150,8 @@ const Navbar = () => {
 															href="#"
 															onClick={logout}
 															className={classNames(
-																active ? "bg-gray-100" : "",
-																"block px-4 py-2 text-sm text-gray-700"
+																active ? "bg-gray-800" : "",
+																"block px-4 py-2 text-sm text-gray-100"
 															)}
 														>
 															Logout
@@ -186,54 +167,26 @@ const Navbar = () => {
 					</div>
 
 					<Disclosure.Panel className="sm:hidden">
-						<div className="space-y-1 px-2 pb-3 pt-2">
-							{navigation.map((item) => (
-								<Disclosure.Button
-									key={item.name}
-									as="a"
-									onClick={() => handleLinkClick(item.href)}
-									className={classNames(
-										router.pathname === item.href
-											? "bg-gray-900 text-white"
-											: "text-gray-300 hover:bg-gray-700 hover:text-white",
-										"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
-									)}
-									aria-current={router.pathname === item.href ? "page" : undefined}
-								>
-									{item.name}
-								</Disclosure.Button>
-							))}
-							{isLoggedIn && user?.userType === "Administrator" && (
-								<Disclosure.Button
-									as="a"
-									onClick={() => handleLinkClick("/add-debt")}
-									className={classNames(
-										router.pathname === "/add-debt"
-											? "bg-gray-900 text-white"
-											: "text-gray-300 hover:bg-gray-700 hover:text-white",
-										"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
-									)}
-									aria-current={router.pathname === "/add-debt" ? "page" : undefined}
-								>
-									Add Debt
-								</Disclosure.Button>
-							)}
-							{isLoggedIn && user?.userType === "Administrator" && (
-								<Disclosure.Button
-									as="a"
-									onClick={() => handleLinkClick("/history")}
-									className={classNames(
-										router.pathname === "/history"
-											? "bg-gray-900 text-white"
-											: "text-gray-300 hover:bg-gray-700 hover:text-white",
-										"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
-									)}
-									aria-current={router.pathname === "/history" ? "page" : undefined}
-								>
-									History
-								</Disclosure.Button>
-							)}
-						</div>
+						{isLoggedIn && (
+							<div className="space-y-1 px-2 pb-3 pt-2">
+								{(user?.userType === "Administrator" ? adminNavigation : userNavigation).map((item) => (
+									<Disclosure.Button
+										key={item.name}
+										as="a"
+										onClick={() => handleLinkClick(item.href)}
+										className={classNames(
+											router.pathname === item.href
+												? "bg-gray-700 text-white"
+												: "text-gray-300 hover:bg-gray-700 hover:text-white",
+											"block rounded-md px-3 py-2 text-base font-medium cursor-pointer"
+										)}
+										aria-current={router.pathname === item.href ? "page" : undefined}
+									>
+										{item.name}
+									</Disclosure.Button>
+								))}
+							</div>
+						)}
 					</Disclosure.Panel>
 				</>
 			)}
