@@ -10,13 +10,14 @@ export const AuthProvider = ({ children }) => {
 
 	useEffect(() => {
 		const userLoggedIn = localStorage.getItem("isLoggedIn");
+		const storedName = localStorage.getItem("name");
 		const storedUsername = localStorage.getItem("username");
 		const storedUserType = localStorage.getItem("userType");
 		const storedUserId = localStorage.getItem("userId"); // Retrieve stored userId
 
 		if (userLoggedIn === "true") {
 			setIsLoggedIn(true);
-			setUser({ username: storedUsername, userType: storedUserType, userId: storedUserId });
+			setUser({ name: storedName, username: storedUsername, userType: storedUserType, userId: storedUserId });
 		}
 	}, []);
 
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }) => {
 		setIsLoggedIn(true);
 		setUser(userData);
 		localStorage.setItem("isLoggedIn", "true");
+		localStorage.setItem("name", userData.name);
 		localStorage.setItem("username", userData.username);
 		localStorage.setItem("userType", userData.userType);
 		localStorage.setItem("userId", userData.userId); // Store userId
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }) => {
 		setIsLoggedIn(false);
 		setUser(null);
 		localStorage.removeItem("isLoggedIn");
+		localStorage.removeItem("name");
 		localStorage.removeItem("username");
 		localStorage.removeItem("userType");
 		localStorage.removeItem("userId"); // Remove userId

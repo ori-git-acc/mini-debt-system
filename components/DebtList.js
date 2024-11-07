@@ -31,7 +31,7 @@ const DebtList = () => {
 				throw new Error("Failed to fetch debts");
 			}
 			const data = await response.json();
-			console.log("Debts Data:", data); // Log the retrieved debts data
+			// console.log("Debts Data:", data); // Log the retrieved debts data
 
 			const updatedDebts = data.map((debt) => {
 				if (debt.status !== "waived") {
@@ -41,7 +41,7 @@ const DebtList = () => {
 			});
 
 			updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
-			console.log("Updated Debts:", updatedDebts); // Log the updated debts data
+			// console.log("Updated Debts:", updatedDebts); // Log the updated debts data
 
 			const userDebts = updatedDebts.filter((debt) => {
 				if (userType === "Administrator") {
@@ -49,7 +49,7 @@ const DebtList = () => {
 				}
 				return debt.userId.toString() === userId; // Show only user's debts for non-admin
 			});
-			console.log("User Debts:", userDebts); // Log the filtered debts for the user
+			// console.log("User Debts:", userDebts); // Log the filtered debts for the user
 
 			setDebts(userDebts);
 			setFilteredDebts(userDebts);
@@ -62,10 +62,10 @@ const DebtList = () => {
 
 	useEffect(() => {
 		const userType = localStorage.getItem("userType");
-		const userId = localStorage.getItem("userId");
-		const username = localStorage.getItem("username").trim().toLowerCase();
-		console.log("UserType:", userType);
-		console.log("Username:", username);
+		// const userId = localStorage.getItem("userId");
+		// const username = localStorage.getItem("username").trim().toLowerCase();
+		// console.log("UserType:", userType);
+		// console.log("Username:", username);
 
 		if (userType === "Administrator") {
 			setIsAdmin(true);
@@ -81,7 +81,7 @@ const DebtList = () => {
 		if (statusFilter) {
 			filtered = filtered.filter((debt) => debt.status === statusFilter);
 		}
-		console.log("Filtered Debts:", filtered);
+		// console.log("Filtered Debts:", filtered);
 		setFilteredDebts(filtered);
 		const totalDebt = filtered.reduce((acc, debt) => acc + debt.remainingBalance, 0);
 		setTotalRemainingDebt(totalDebt);
@@ -111,15 +111,13 @@ const DebtList = () => {
 			alert("Please enter less or exact amount to remaining balance!");
 			return;
 		}
-		const response = await fetch("/api/payments", {
+		const response = await fetch(`/api/debts/${currentDebtId}/pay`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				debtId: currentDebtId,
 				paymentAmount: parseFloat(paymentAmount),
-				paymentDate: new Date().toISOString(),
 			}),
 		});
 		if (response.ok) {
