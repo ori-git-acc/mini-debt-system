@@ -106,7 +106,7 @@ const Navbar = () => {
 										<div>
 											<Menu.Button className="flex rounded-full bg-gray-900 text-sm focus:outline-none">
 												<span className="sr-only">Open user menu</span>
-												<span className="text-white">{user?.username}</span>
+												<span className="text-white">{user?.name}</span>
 											</Menu.Button>
 										</div>
 										<Transition
