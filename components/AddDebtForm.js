@@ -1,4 +1,3 @@
-// components/AddDebtForm.js
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -15,7 +14,7 @@ const AddDebtForm = () => {
 			try {
 				const response = await fetch("/api/users");
 				const data = await response.json();
-				setDebtorList(data.map((user) => user.username));
+				setDebtorList(data);
 			} catch (err) {
 				console.error("Failed to fetch users:", err);
 			}
@@ -37,9 +36,9 @@ const AddDebtForm = () => {
 		const input = e.target.value;
 		setDebtorName(input);
 		if (input) {
-			const filteredSuggestions = debtorList.filter((debtor) =>
-				debtor.toLowerCase().includes(input.toLowerCase())
-			);
+			const filteredSuggestions = debtorList
+				.filter((debtor) => debtor.name.toLowerCase().includes(input.toLowerCase()))
+				.map((debtor) => debtor.name);
 			setSuggestions(filteredSuggestions);
 		} else {
 			setSuggestions([]);
@@ -49,6 +48,12 @@ const AddDebtForm = () => {
 	const handleAddDebt = async () => {
 		if (!debtorName || !amount) {
 			alert("Debtor's name and debt amount cannot be blank!");
+			return;
+		}
+
+		const selectedDebtor = debtorList.find((debtor) => debtor.name === debtorName);
+		if (!selectedDebtor) {
+			alert("Unable to add debt, user is not registered!");
 			return;
 		}
 
@@ -65,6 +70,7 @@ const AddDebtForm = () => {
 				createdAt: new Date().toISOString(),
 				lastPaymentDate: null,
 				status: "Unpaid",
+				userId: selectedDebtor.id,
 			}),
 		});
 
