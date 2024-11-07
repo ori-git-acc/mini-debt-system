@@ -13,15 +13,18 @@ const DebtHistory = () => {
 		const userType = localStorage.getItem("userType");
 		if (userType !== "Administrator") {
 			router.push("/tracker");
+		} else {
+			const fetchDebts = async () => {
+				const response = await fetch("/api/debts?userType=Administrator");
+				if (!response.ok) {
+					throw new Error("Failed to fetch debts");
+				}
+				const data = await response.json();
+				setDebts(data);
+				setTotalDebts(data.length);
+			};
+			fetchDebts();
 		}
-
-		const fetchDebts = async () => {
-			const response = await fetch("/api/debts");
-			const data = await response.json();
-			setDebts(data);
-			setTotalDebts(data.length);
-		};
-		fetchDebts();
 	}, [router]);
 
 	const handleSearchChange = (e) => {
@@ -40,7 +43,7 @@ const DebtHistory = () => {
 		const promises = selectedDebts.map((id) => fetch(`/api/debts/${id}`, { method: "DELETE" }));
 		await Promise.all(promises);
 		setSelectedDebts([]);
-		const response = await fetch("/api/debts");
+		const response = await fetch("/api/debts?userType=Administrator");
 		const data = await response.json();
 		setDebts(data);
 	};
@@ -56,7 +59,12 @@ const DebtHistory = () => {
 
 	const sortedDebts = debts
 		.filter((debt) => debt.debtorName.toLowerCase().includes(searchTerm.toLowerCase()))
-		.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
+		.sort((a, b) => {
+			if (typeof a[sortBy] === "string" && typeof b[sortBy] === "string") {
+				return a[sortBy].localeCompare(b[sortBy]);
+			}
+			return a[sortBy] - b[sortBy];
+		});
 
 	return (
 		<div className="flex flex-col items-center min-h-screen bg-gray-900 p-4">
@@ -119,7 +127,7 @@ const DebtHistory = () => {
 									className="py-2 px-4 border-b border-gray-600 cursor-pointer"
 									onClick={() => handleSortChange("totalPaid")}
 								>
-									Total Payment
+									Total Paid
 								</th>
 								<th
 									className="py-2 px-4 border-b border-gray-600 cursor-pointer"

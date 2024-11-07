@@ -19,13 +19,18 @@ const DebtList = () => {
 
 	const fetchDebts = async () => {
 		try {
-			const response = await fetch("/api/debts");
+			const userType = localStorage.getItem("userType");
+			const userId = localStorage.getItem("userId"); // Retrieve userId from localStorage
+
+			if (!userId) {
+				throw new Error("User ID is null. Please ensure you are logged in.");
+			}
+
+			const response = await fetch(`/api/debts?userId=${userId}&userType=${userType}`);
 			if (!response.ok) {
 				throw new Error("Failed to fetch debts");
 			}
 			const data = await response.json();
-			const userType = localStorage.getItem("userType");
-			const username = localStorage.getItem("username").trim().toLowerCase();
 			console.log("Debts Data:", data); // Log the retrieved debts data
 
 			const updatedDebts = data.map((debt) => {
@@ -38,10 +43,12 @@ const DebtList = () => {
 			updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
 			console.log("Updated Debts:", updatedDebts); // Log the updated debts data
 
-			const userDebts =
-				userType === "Administrator"
-					? updatedDebts
-					: updatedDebts.filter((debt) => debt.debtorName.trim().toLowerCase() === username);
+			const userDebts = updatedDebts.filter((debt) => {
+				if (userType === "Administrator") {
+					return true; // Show all debts for admin
+				}
+				return debt.userId.toString() === userId; // Show only user's debts for non-admin
+			});
 			console.log("User Debts:", userDebts); // Log the filtered debts for the user
 
 			setDebts(userDebts);
@@ -55,6 +62,7 @@ const DebtList = () => {
 
 	useEffect(() => {
 		const userType = localStorage.getItem("userType");
+		const userId = localStorage.getItem("userId");
 		const username = localStorage.getItem("username").trim().toLowerCase();
 		console.log("UserType:", userType);
 		console.log("Username:", username);

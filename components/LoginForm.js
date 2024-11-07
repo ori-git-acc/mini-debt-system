@@ -20,7 +20,9 @@ const LoginForm = () => {
 		});
 		const result = await response.json();
 		if (response.ok) {
-			login({ username: result.user.username, userType: result.user.userType });
+			// The login function from AuthContext will handle storing user details in localStorage
+			login({ username: result.user.username, userType: result.user.userType, userId: result.user.id });
+
 			if (result.user.userType === "Administrator") {
 				router.push("/"); // Redirect to home page for admins
 			} else {

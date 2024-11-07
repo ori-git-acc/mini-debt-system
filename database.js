@@ -1,4 +1,3 @@
-// database.js
 const sqlite3 = require("sqlite3").verbose();
 
 const db = new sqlite3.Database("./mini-debt-system.db", (err) => {
@@ -37,7 +36,9 @@ const db = new sqlite3.Database("./mini-debt-system.db", (err) => {
                 totalPaid REAL,
                 createdAt TEXT,
                 lastPaymentDate TEXT,
-                status TEXT
+                status TEXT,
+                userId INTEGER,
+                FOREIGN KEY(userId) REFERENCES users(id)
             )
         `,
 			(err) => {

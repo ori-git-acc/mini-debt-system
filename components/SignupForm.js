@@ -33,6 +33,7 @@ const SignupForm = () => {
 				userType: "non-administrator",
 			}),
 		});
+
 		if (response.ok) {
 			alert("Account created successfully!");
 			const loginNow = confirm("Do you want to login now?");
@@ -55,7 +56,12 @@ const SignupForm = () => {
 				router.push("/login");
 			}
 		} else {
-			alert("Error creating account. Please try again.");
+			const errorData = await response.json();
+			if (errorData.message === "Username already exists") {
+				alert("Username already exists. Please choose a different username.");
+			} else {
+				alert("Error creating account. Please try again.");
+			}
 		}
 	};
 

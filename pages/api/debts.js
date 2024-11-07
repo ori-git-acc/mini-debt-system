@@ -1,9 +1,19 @@
-// pages/api/debts.js
 import db from "../../database";
 
 export default function handler(req, res) {
 	if (req.method === "GET") {
-		db.all("SELECT * FROM debts", [], (err, rows) => {
+		const userId = req.query.userId;
+		const userType = req.query.userType;
+
+		let query = "SELECT * FROM debts";
+		let params = [];
+
+		if (userType !== "Administrator") {
+			query += " WHERE userId = ?";
+			params.push(userId);
+		}
+
+		db.all(query, params, (err, rows) => {
 			if (err) {
 				res.status(500).json({ message: "Error fetching debts", error: err });
 			} else {
@@ -11,11 +21,12 @@ export default function handler(req, res) {
 			}
 		});
 	} else if (req.method === "POST") {
-		const { debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate } = req.body;
+		const { debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate, userId } =
+			req.body;
 		const status = remainingBalance > 0 ? "unpaid" : "paid";
 		db.run(
-			"INSERT INTO debts (debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate, status) VALUES (?, ?, ?, ?, ?, ?, ?)",
-			[debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate, status],
+			"INSERT INTO debts (debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate, status, userId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+			[debtorName, originalAmount, remainingBalance, totalPaid, createdAt, lastPaymentDate, status, userId],
 			function (err) {
 				if (err) {
 					res.status(500).json({ message: "Error adding debt", error: err });

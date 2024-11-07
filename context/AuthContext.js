@@ -1,4 +1,3 @@
-// context/AuthContext.js
 import { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -13,10 +12,11 @@ export const AuthProvider = ({ children }) => {
 		const userLoggedIn = localStorage.getItem("isLoggedIn");
 		const storedUsername = localStorage.getItem("username");
 		const storedUserType = localStorage.getItem("userType");
+		const storedUserId = localStorage.getItem("userId"); // Retrieve stored userId
 
 		if (userLoggedIn === "true") {
 			setIsLoggedIn(true);
-			setUser({ username: storedUsername, userType: storedUserType });
+			setUser({ username: storedUsername, userType: storedUserType, userId: storedUserId });
 		}
 	}, []);
 
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
 		localStorage.setItem("isLoggedIn", "true");
 		localStorage.setItem("username", userData.username);
 		localStorage.setItem("userType", userData.userType);
+		localStorage.setItem("userId", userData.userId); // Store userId
 		router.push("/");
 	};
 
@@ -35,6 +36,7 @@ export const AuthProvider = ({ children }) => {
 		localStorage.removeItem("isLoggedIn");
 		localStorage.removeItem("username");
 		localStorage.removeItem("userType");
+		localStorage.removeItem("userId"); // Remove userId
 		router.push("/login");
 	};
 

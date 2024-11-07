@@ -25,6 +25,7 @@ const AddDebtForm = () => {
 		const selectedDebtor = debtorList.find((debtor) => debtor.name === debtorName);
 		if (!selectedDebtor) {
 			alert("Unable to add debt, user is not registered!");
+			setValues({ debtorName: isAdmin ? "" : localStorage.getItem("username"), amount: "" });
 			return;
 		}
 
