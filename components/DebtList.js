@@ -1,4 +1,3 @@
-// conponents/DebtList.js
 import { useState, useEffect } from "react";
 
 const DebtList = () => {
@@ -19,28 +18,47 @@ const DebtList = () => {
 	};
 
 	const fetchDebts = async () => {
-		const response = await fetch("/api/debts");
-		const data = await response.json();
-		const userType = localStorage.getItem("userType");
-		const username = localStorage.getItem("username");
-		const updatedDebts = data.map((debt) => {
-			if (debt.status !== "waived") {
-				debt.status = debt.remainingBalance > 0 ? "unpaid" : "paid";
+		try {
+			const response = await fetch("/api/debts");
+			if (!response.ok) {
+				throw new Error("Failed to fetch debts");
 			}
-			return debt;
-		});
+			const data = await response.json();
+			const userType = localStorage.getItem("userType");
+			const username = localStorage.getItem("username").trim().toLowerCase();
+			console.log("Debts Data:", data); // Log the retrieved debts data
 
-		updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
+			const updatedDebts = data.map((debt) => {
+				if (debt.status !== "waived") {
+					debt.status = debt.remainingBalance > 0 ? "unpaid" : "paid";
+				}
+				return debt;
+			});
 
-		const userDebts =
-			userType === "Administrator" ? updatedDebts : updatedDebts.filter((debt) => debt.debtorName === username);
-		setDebts(userDebts);
-		setFilteredDebts(userDebts);
-		setTotalRemainingDebt(userDebts.reduce((acc, debt) => acc + debt.remainingBalance, 0));
+			updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
+			console.log("Updated Debts:", updatedDebts); // Log the updated debts data
+
+			const userDebts =
+				userType === "Administrator"
+					? updatedDebts
+					: updatedDebts.filter((debt) => debt.debtorName.trim().toLowerCase() === username);
+			console.log("User Debts:", userDebts); // Log the filtered debts for the user
+
+			setDebts(userDebts);
+			setFilteredDebts(userDebts);
+			setTotalRemainingDebt(userDebts.reduce((acc, debt) => acc + debt.remainingBalance, 0));
+			setTotalDebts(userDebts.length);
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	useEffect(() => {
 		const userType = localStorage.getItem("userType");
+		const username = localStorage.getItem("username").trim().toLowerCase();
+		console.log("UserType:", userType);
+		console.log("Username:", username);
+
 		if (userType === "Administrator") {
 			setIsAdmin(true);
 		}
@@ -49,16 +67,18 @@ const DebtList = () => {
 
 	useEffect(() => {
 		let filtered = debts;
-		if (isAdmin && searchTerm) {
+		if (searchTerm) {
 			filtered = debts.filter((debt) => debt.debtorName.toLowerCase().includes(searchTerm.toLowerCase()));
-		} else if (statusFilter) {
-			filtered = debts.filter((debt) => debt.status === statusFilter);
 		}
+		if (statusFilter) {
+			filtered = filtered.filter((debt) => debt.status === statusFilter);
+		}
+		console.log("Filtered Debts:", filtered);
 		setFilteredDebts(filtered);
 		const totalDebt = filtered.reduce((acc, debt) => acc + debt.remainingBalance, 0);
 		setTotalRemainingDebt(totalDebt);
-		setTotalDebts(filtered.length); // Update the total debts count
-	}, [searchTerm, statusFilter, debts, isAdmin]);
+		setTotalDebts(filtered.length);
+	}, [searchTerm, statusFilter, debts]);
 
 	const handleSearchChange = (e) => {
 		setSearchTerm(e.target.value);
@@ -83,12 +103,16 @@ const DebtList = () => {
 			alert("Please enter less or exact amount to remaining balance!");
 			return;
 		}
-		const response = await fetch(`/api/debts/${currentDebtId}/pay`, {
+		const response = await fetch("/api/payments", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ paymentAmount: parseFloat(paymentAmount) }),
+			body: JSON.stringify({
+				debtId: currentDebtId,
+				paymentAmount: parseFloat(paymentAmount),
+				paymentDate: new Date().toISOString(),
+			}),
 		});
 		if (response.ok) {
 			fetchDebts();
@@ -166,10 +190,21 @@ const DebtList = () => {
 								{isAdmin && <th className="py-2 px-4 border-b border-gray-600">Action</th>}
 							</tr>
 						</thead>
-						<tbody className="text-center bg-gray-800">
+						<tbody className="text-center text-gray-950">
 							{Array.isArray(filteredDebts) &&
 								filteredDebts.map((debt) => (
-									<tr key={debt.id}>
+									<tr
+										key={debt.id}
+										className={
+											debt.status === "paid"
+												? "bg-green-100"
+												: debt.status === "waived"
+												? "bg-blue-100"
+												: debt.status === "unpaid"
+												? "bg-red-100"
+												: ""
+										}
+									>
 										<td className="py-2 px-4 border-b border-gray-600">{debt.debtorName}</td>
 										<td className="py-2 px-4 border-b border-gray-600">{debt.originalAmount}</td>
 										<td className="py-2 px-4 border-b border-gray-600">{debt.remainingBalance}</td>
@@ -180,8 +215,8 @@ const DebtList = () => {
 										<td className="py-2 px-4 border-b border-gray-600">
 											{debt.lastPaymentDate ? formatDate(debt.lastPaymentDate) : ""}
 										</td>
-										<td className="py-2 px-4 border-b border-gray-600">
-											{isAdmin && (
+										{isAdmin && (
+											<td className="py-2 px-4 border-b border-gray-600">
 												<button
 													onClick={() => handlePay(debt.id)}
 													className={`bg-green-500 ${
@@ -193,8 +228,6 @@ const DebtList = () => {
 												>
 													Pay
 												</button>
-											)}
-											{isAdmin && (
 												<button
 													onClick={() => handleWaive(debt.id)}
 													className={`bg-red-500 ${
@@ -206,8 +239,8 @@ const DebtList = () => {
 												>
 													Waive
 												</button>
-											)}
-										</td>
+											</td>
+										)}
 									</tr>
 								))}
 						</tbody>

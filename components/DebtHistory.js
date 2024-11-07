@@ -1,4 +1,3 @@
-// components/DebtHistory.js
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
@@ -80,8 +79,7 @@ const DebtHistory = () => {
 					</button>
 				</div>
 				<div className="flex justify-between items-center text-white mb-4">
-					{" "}
-					<span>Number of Debts: {totalDebts}</span> {/* Display total debts count */}{" "}
+					<span>Number of Debts: {totalDebts}</span> {/* Display total debts count */}
 				</div>
 				<div className="overflow-auto bg-gray-800 rounded-lg shadow-lg max-h-[450px]">
 					<table className="min-w-full bg-gray-700 text-white">
@@ -143,9 +141,18 @@ const DebtHistory = () => {
 								</th>
 							</tr>
 						</thead>
-						<tbody className="text-center bg-gray-800">
+						<tbody className="text-center">
 							{sortedDebts.map((debt) => (
-								<tr key={debt.id}>
+								<tr
+									key={debt.id}
+									className={
+										debt.status === "paid"
+											? "bg-green-100 text-black"
+											: debt.status === "unpaid"
+											? "bg-red-100 text-black"
+											: "bg-blue-100 text-black"
+									}
+								>
 									<td className="py-2 px-4 border-b border-gray-600">
 										<input
 											type="checkbox"
@@ -161,15 +168,7 @@ const DebtHistory = () => {
 									<td className="py-2 px-4 border-b border-gray-600">
 										{debt.lastPaymentDate ? formatDate(debt.lastPaymentDate) : ""}
 									</td>
-									<td
-										className={`py-2 px-4 border-b border-gray-600 ${
-											debt.status === "paid"
-												? "text-green-500"
-												: debt.status === "unpaid"
-												? "text-red-500"
-												: "text-blue-500"
-										}`}
-									>
+									<td className="py-2 px-4 border-b border-gray-600">
 										{debt.status === "paid"
 											? "Paid"
 											: debt.status === "unpaid"
