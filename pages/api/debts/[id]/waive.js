@@ -1,11 +1,10 @@
-// pages/api/debts/[id]/waive.js
 import db from "../../../../database";
 
 export default function handler(req, res) {
 	const { id } = req.query;
 
 	if (req.method === "POST") {
-		db.run("UPDATE debts SET status = 'waived' WHERE id = ?", [id], function (err) {
+		db.run("UPDATE debts SET status = 'waived', remainingBalance = 0 WHERE id = ?", [id], function (err) {
 			if (err) {
 				res.status(500).json({ message: "Error waiving debt", error: err });
 			} else {

@@ -10,7 +10,8 @@ const DebtList = () => {
 	const [paymentAmount, setPaymentAmount] = useState("");
 	const [isAdmin, setIsAdmin] = useState(false);
 	const [statusFilter, setStatusFilter] = useState("");
-	const [totalDebts, setTotalDebts] = useState(0); // Added state for total debts
+	const [totalDebts, setTotalDebts] = useState(0);
+	const [showWaiveConfirm, setShowWaiveConfirm] = useState(false); // State for waive confirmation dialog
 
 	const formatDate = (dateString) => {
 		const options = { year: "numeric", month: "short", day: "numeric" };
@@ -20,7 +21,7 @@ const DebtList = () => {
 	const fetchDebts = async () => {
 		try {
 			const userType = localStorage.getItem("userType");
-			const userId = localStorage.getItem("userId"); // Retrieve userId from localStorage
+			const userId = localStorage.getItem("userId");
 
 			if (!userId) {
 				throw new Error("User ID is null. Please ensure you are logged in.");
@@ -31,7 +32,6 @@ const DebtList = () => {
 				throw new Error("Failed to fetch debts");
 			}
 			const data = await response.json();
-			// console.log("Debts Data:", data); // Log the retrieved debts data
 
 			const updatedDebts = data.map((debt) => {
 				if (debt.status !== "waived") {
@@ -41,15 +41,13 @@ const DebtList = () => {
 			});
 
 			updatedDebts.sort((a, b) => a.debtorName.localeCompare(b.debtorName));
-			// console.log("Updated Debts:", updatedDebts); // Log the updated debts data
 
 			const userDebts = updatedDebts.filter((debt) => {
 				if (userType === "Administrator") {
-					return true; // Show all debts for admin
+					return true;
 				}
-				return debt.userId.toString() === userId; // Show only user's debts for non-admin
+				return debt.userId.toString() === userId;
 			});
-			// console.log("User Debts:", userDebts); // Log the filtered debts for the user
 
 			setDebts(userDebts);
 			setFilteredDebts(userDebts);
@@ -62,10 +60,6 @@ const DebtList = () => {
 
 	useEffect(() => {
 		const userType = localStorage.getItem("userType");
-		// const userId = localStorage.getItem("userId");
-		// const username = localStorage.getItem("username").trim().toLowerCase();
-		// console.log("UserType:", userType);
-		// console.log("Username:", username);
 
 		if (userType === "Administrator") {
 			setIsAdmin(true);
@@ -81,7 +75,6 @@ const DebtList = () => {
 		if (statusFilter) {
 			filtered = filtered.filter((debt) => debt.status === statusFilter);
 		}
-		// console.log("Filtered Debts:", filtered);
 		setFilteredDebts(filtered);
 		const totalDebt = filtered.reduce((acc, debt) => acc + debt.remainingBalance, 0);
 		setTotalRemainingDebt(totalDebt);
@@ -130,22 +123,30 @@ const DebtList = () => {
 		setPaymentAmount("");
 	};
 
-	const handleWaive = async (id) => {
-		if (confirm("Are you sure you want to waive this debt?")) {
-			const response = await fetch(`/api/debts/${id}/waive`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ status: "waived" }),
-			});
-			if (response.ok) {
-				alert("Debt item is waived!");
-				fetchDebts();
-			} else {
-				alert("Error processing waiver. Please try again.");
-			}
+	const handleWaive = (id) => {
+		setCurrentDebtId(id);
+		setShowWaiveConfirm(true);
+	};
+
+	const handleConfirmWaive = async () => {
+		const response = await fetch(`/api/debts/${currentDebtId}/waive`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ status: "waived" }),
+		});
+		if (response.ok) {
+			alert("Debt item is waived!");
+			fetchDebts();
+		} else {
+			alert("Error processing waiver. Please try again.");
 		}
+		setShowWaiveConfirm(false);
+	};
+
+	const handleCancelWaive = () => {
+		setShowWaiveConfirm(false);
 	};
 
 	return (
@@ -175,7 +176,7 @@ const DebtList = () => {
 					)}
 				</div>
 				<div className="flex justify-between md:justify-start md:space-x-4 items-center text-white mb-4">
-					<span>Number of Debts: {totalDebts}</span> {/* Display total debts */}
+					<span>Number of Debts: {totalDebts}</span>
 					<span>Total Remaining Debt: {totalRemainingDebt}</span>
 					{isAdmin && (
 						<a href="/add-debt" className="text-blue-500 hover:underline whitespace-nowrap">
@@ -223,28 +224,30 @@ const DebtList = () => {
 										</td>
 										{isAdmin && (
 											<td className="py-2 px-4 border-b border-gray-600">
-												<button
-													onClick={() => handlePay(debt.id)}
-													className={`bg-green-500 ${
-														debt.status !== "unpaid"
-															? "opacity-50 cursor-not-allowed"
-															: "hover:bg-green-700"
-													} text-white font-bold py-1 px-2 rounded mr-2`}
-													disabled={debt.status !== "unpaid"}
-												>
-													Pay
-												</button>
-												<button
-													onClick={() => handleWaive(debt.id)}
-													className={`bg-red-500 ${
-														debt.status !== "unpaid"
-															? "opacity-50 cursor-not-allowed"
-															: "hover:bg-red-700"
-													} text-white font-bold py-1 px-2 rounded`}
-													disabled={debt.status !== "unpaid"}
-												>
-													Waive
-												</button>
+												<div className="flex justify-center space-x-2">
+													<button
+														onClick={() => handlePay(debt.id)}
+														className={`bg-green-500 ${
+															debt.status !== "unpaid"
+																? "opacity-50 cursor-not-allowed"
+																: "hover:bg-green-700"
+														} text-white font-bold py-1 px-2 rounded`}
+														disabled={debt.status !== "unpaid"}
+													>
+														Pay
+													</button>
+													<button
+														onClick={() => handleWaive(debt.id)}
+														className={`bg-red-500 ${
+															debt.status !== "unpaid"
+																? "opacity-50 cursor-not-allowed"
+																: "hover:bg-red-700"
+														} text-white font-bold py-1 px-2 rounded`}
+														disabled={debt.status !== "unpaid"}
+													>
+														Waive
+													</button>
+												</div>
 											</td>
 										)}
 									</tr>
@@ -276,6 +279,28 @@ const DebtList = () => {
 									setPaymentAmount("");
 								}}
 								className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded w-full"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+			{showWaiveConfirm && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="bg-gray-700 text-white rounded-lg p-6 w-96">
+						<h2 className="text-xl font-bold mb-4">Confirm Waive</h2>
+						<p>Are you sure you want to waive this debt?</p>
+						<div className="flex justify-end gap-2 w-full mt-4">
+							<button
+								onClick={handleConfirmWaive}
+								className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+							>
+								Waive
+							</button>
+							<button
+								onClick={handleCancelWaive}
+								className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
 							>
 								Cancel
 							</button>
