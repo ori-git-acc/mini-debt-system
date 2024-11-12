@@ -7,6 +7,8 @@ const DebtHistory = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [sortBy, setSortBy] = useState("debtorName");
 	const [totalDebts, setTotalDebts] = useState(0); // State to keep track of total debts count
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // State for delete confirmation dialog
+	const [isSelectAllChecked, setIsSelectAllChecked] = useState(false); // State for header checkbox
 	const router = useRouter();
 
 	useEffect(() => {
@@ -32,20 +34,48 @@ const DebtHistory = () => {
 	};
 
 	const handleSelectDebt = (id) => {
+		let newSelectedDebts;
 		if (selectedDebts.includes(id)) {
-			setSelectedDebts(selectedDebts.filter((debtId) => debtId !== id));
+			newSelectedDebts = selectedDebts.filter((debtId) => debtId !== id);
 		} else {
-			setSelectedDebts([...selectedDebts, id]);
+			newSelectedDebts = [...selectedDebts, id];
+		}
+		setSelectedDebts(newSelectedDebts);
+		setIsSelectAllChecked(newSelectedDebts.length === debts.length);
+	};
+
+	const handleSelectAll = () => {
+		if (isSelectAllChecked) {
+			setSelectedDebts([]);
+			setIsSelectAllChecked(false);
+		} else {
+			setSelectedDebts(debts.map((debt) => debt.id));
+			setIsSelectAllChecked(true);
 		}
 	};
 
-	const handleDeleteSelected = async () => {
+	const handleDeleteSelected = () => {
+		if (selectedDebts.length === 0) {
+			alert("Please select a debt to delete.");
+		} else {
+			setShowDeleteConfirm(true);
+		}
+	};
+
+	const handleConfirmDelete = async () => {
 		const promises = selectedDebts.map((id) => fetch(`/api/debts/${id}`, { method: "DELETE" }));
 		await Promise.all(promises);
 		setSelectedDebts([]);
 		const response = await fetch("/api/debts?userType=Administrator");
 		const data = await response.json();
 		setDebts(data);
+		setTotalDebts(data.length);
+		setShowDeleteConfirm(false);
+		setIsSelectAllChecked(false);
+	};
+
+	const handleCancelDelete = () => {
+		setShowDeleteConfirm(false);
 	};
 
 	const handleSortChange = (field) => {
@@ -81,7 +111,6 @@ const DebtHistory = () => {
 					<button
 						onClick={handleDeleteSelected}
 						className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-						disabled={selectedDebts.length === 0}
 					>
 						Delete Selected
 					</button>
@@ -94,16 +123,7 @@ const DebtHistory = () => {
 						<thead className="text-center sticky top-0 bg-gray-700">
 							<tr>
 								<th className="py-2 px-4 border-b border-gray-600">
-									<input
-										type="checkbox"
-										onChange={(e) => {
-											if (e.target.checked) {
-												setSelectedDebts(debts.map((debt) => debt.id));
-											} else {
-												setSelectedDebts([]);
-											}
-										}}
-									/>
+									<input type="checkbox" checked={isSelectAllChecked} onChange={handleSelectAll} />
 								</th>
 								<th
 									className="py-2 px-4 border-b border-gray-600 cursor-pointer"
@@ -189,6 +209,28 @@ const DebtHistory = () => {
 					</table>
 				</div>
 			</div>
+			{showDeleteConfirm && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+					<div className="bg-gray-700 text-white rounded-lg p-6 w-96">
+						<h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+						<p>Are you sure you want to delete the selected debts?</p>
+						<div className="flex justify-end w-full mt-4 gap-2">
+							<button
+								onClick={handleConfirmDelete}
+								className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+							>
+								Delete
+							</button>
+							<button
+								onClick={handleCancelDelete}
+								className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+							>
+								Cancel
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

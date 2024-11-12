@@ -8,8 +8,8 @@ import { AuthContext } from "../context/AuthContext";
 
 const adminNavigation = [
 	{ name: "Home", href: "/" },
-	{ name: "Tracker", href: "/tracker" },
 	{ name: "Add Debt", href: "/add-debt" },
+	{ name: "Tracker", href: "/tracker" },
 	{ name: "History", href: "/history" },
 ];
 
