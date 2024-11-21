@@ -47,7 +47,7 @@ const SignupForm = () => {
 				});
 				if (loginResponse.ok) {
 					const result = await loginResponse.json();
-					login({ username: result.user.username, userType: result.user.userType });
+					login({ name: result.user.name, username: result.user.username, userType: result.user.userType });
 					router.push("/"); // Redirect to home page
 				} else {
 					alert("Error logging in. Please try again.");

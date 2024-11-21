@@ -1,3 +1,4 @@
+// context/AuthContext.js
 import { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
